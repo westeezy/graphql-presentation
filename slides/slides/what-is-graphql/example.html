@@ -1,0 +1,19 @@
+<h2>Let me see something!</h2>
+
+<pre><code>
+  //GraphQL Query
+  {
+    user(id: 1) {
+      name
+      age
+      friends {
+        name
+      }
+    }
+  }
+
+  //Typical Rest Endpoint (that might get too much or too little data)
+  GET /users/1 and GET /users/1/friends
+  //or maybe
+  GET /users/1?include=friends.name
+</code></pre>

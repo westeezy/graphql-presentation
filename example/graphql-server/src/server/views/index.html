@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GraphQL Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+<body>
+  <section id="content" class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="jumbotron">
+          <h1>GraphQL Tester</h1>
+          <p>By Westeezy</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <form>
+          <div class="form-group">
+            <label for="query">Query</label>
+            <textarea class="form-control"
+                      id="query-text"
+                      name="query"
+                      rows="10"
+                      placeholder="Enter Query"></textarea>
+          </div>
+          <button class="btn btn-primary"
+                  id="query-btn"
+                  type="submit">Query</button>
+        </form>
+      </div>
+      <div class="col-sm-6">
+        <label>Result</label>
+        <pre id="result"> Enter Query...</pre>
+      </div>
+    </div>
+  </section>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var queryBtn = document.querySelector('#query-btn');
+  var result = document.querySelector('#result');
+  queryBtn.onclick = function(e) {
+    e.preventDefault();
+    var query = document.querySelector('#query-text').value,
+        url = '/data?query=' + query;
+
+    var reqListener = function() {
+      result.innerHTML = JSON.stringify(JSON.parse(this.responseText), null, 4);
+    }
+
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.addEventListener("load", reqListener);
+    httpRequest.open('GET', url);
+    httpRequest.send();
+  }
+});
+</script>
+</html>

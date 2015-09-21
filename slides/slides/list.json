@@ -1,0 +1,11 @@
+[
+    "index.html",
+    [
+      "what-is-graphql/what.html",
+      "what-is-graphql/why.html",
+      "what-is-graphql/who.html",
+      "what-is-graphql/how.html",
+      "what-is-graphql/example.html"
+    ],
+    "keyconcepts.html"
+]

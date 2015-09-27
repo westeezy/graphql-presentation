@@ -54,7 +54,7 @@ var userType = new GraphQLObjectType({
     interests: {
       type: new GraphQLList(interestType),
       description: 'The interests of the user, or an empty list if they have none.',
-      resolve: (user, params, source, fieldASTs) => {
+      resolve: (user) => {
         return Interests.find({
           _id: {
             $in: user.interests
@@ -113,8 +113,8 @@ var schema = new GraphQLSchema({
   // mutation
   mutation: new GraphQLObjectType({
     name: 'Mutation',
-    fields: {
       createUser: {
+    fields: {
         type: userType,
         args: {
           name: {
@@ -122,7 +122,7 @@ var schema = new GraphQLSchema({
             type: GraphQLString
           }
         },
-        resolve: (obj, {name}, source, fieldASTs) => co(function *() {
+        resolve: (obj, {name}) => co(function *() {
           //var projections = getProjection(fieldASTs);
           var user = new User();
           user.name = name;
@@ -139,7 +139,7 @@ var schema = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (obj, {id}, source, fieldASTs) => co(function *() {
+        resolve: (obj, {id}) => co(function *() {
           //var projections = getProjection(fieldASTs);
           return yield User.findOneAndRemove({_id: id});
         })
@@ -174,5 +174,8 @@ var schema = new GraphQLSchema({
   })
 });
 
+/*eslint-disable */
 export var getProjection;
 export default schema;
+/*eslint-enable */
+

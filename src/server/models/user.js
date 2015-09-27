@@ -7,6 +7,10 @@ var UserSchema = new mongoose.Schema({
   friends: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  }],
+  interests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Interests'
   }]
 });
 

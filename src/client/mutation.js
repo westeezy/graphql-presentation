@@ -37,14 +37,11 @@ request
     mutation M($name: String!) {
       createUser(name: $name) {
         name
-        friends {
-          name
-        }
       }
     }
     `,
     params: {
-      name: 'Wedge'
+      name: 'Westin'
     }
   })
   .end(function (err, res) {

@@ -13,7 +13,9 @@ request
         name
         friends {
           name
-          friends
+          friends {
+            name
+          }
         }
       }
     }`

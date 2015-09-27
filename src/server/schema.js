@@ -7,7 +7,8 @@ import {
 } from 'graphql/type';
 
 import co from 'co';
-import User from './user';
+import User from './models/user';
+import Interests from './models/interests';
 
 /**
  * generate projection object for mongoose
@@ -22,6 +23,22 @@ function getProjection (fieldASTs) {
   }, {});
 }
 
+
+var interestType = new GraphQLObjectType({
+  name: 'Interest',
+  description: 'An Interest',
+  fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The id of the interest.'
+    },
+    name: {
+      type: GraphQLString,
+      description: 'The name of the interest.'
+    }
+  })
+});
+
 var userType = new GraphQLObjectType({
   name: 'User',
   description: 'User creator',
@@ -33,6 +50,17 @@ var userType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       description: 'The name of the user.'
+    },
+    interests: {
+      type: new GraphQLList(interestType),
+      description: 'The interests of the user, or an empty list if they have none.',
+      resolve: (user, params, source, fieldASTs) => {
+        return Interests.find({
+          _id: {
+            $in: user.interests
+          }
+        });
+      }
     },
     friends: {
       type: new GraphQLList(userType),

@@ -22,6 +22,7 @@ qs(app);
 
 if (process.env.NODE_ENV !== 'test') {
   mongoose.connect('mongodb://localhost/graphql');
+  mongoose.set('debug', true);
 }
 
 routes.get('/', function* () {

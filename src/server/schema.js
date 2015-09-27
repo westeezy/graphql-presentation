@@ -113,8 +113,8 @@ var schema = new GraphQLSchema({
   // mutation
   mutation: new GraphQLObjectType({
     name: 'Mutation',
-      createUser: {
     fields: {
+      createUser: {
         type: userType,
         args: {
           name: {
@@ -123,7 +123,6 @@ var schema = new GraphQLSchema({
           }
         },
         resolve: (obj, {name}) => co(function *() {
-          //var projections = getProjection(fieldASTs);
           var user = new User();
           user.name = name;
 
@@ -140,7 +139,6 @@ var schema = new GraphQLSchema({
           }
         },
         resolve: (obj, {id}) => co(function *() {
-          //var projections = getProjection(fieldASTs);
           return yield User.findOneAndRemove({_id: id});
         })
       },
@@ -174,8 +172,7 @@ var schema = new GraphQLSchema({
   })
 });
 
-/*eslint-disable */
+/* eslint-disable */
 export var getProjection;
 export default schema;
-/*eslint-enable */
-
+/* eslint-enable */

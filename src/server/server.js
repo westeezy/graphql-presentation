@@ -26,7 +26,11 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 routes.get('/', function* () {
-  this.body = yield render('index');
+  this.body = yield render('query');
+});
+
+routes.get('/mutate', function* () {
+  this.body = yield render('mutate');
 });
 
 routes.get('/data', function* () {
@@ -48,6 +52,13 @@ routes.get('/data', function* () {
 
 routes.post('/data', function* () {
   var payload = yield parseBody(this);
+  if(typeof payload.params === 'string') {
+    try {
+      payload.params = JSON.parse(payload.params);
+    } catch(e) {
+      debug(e);
+    }
+  }
   var resp = yield graphql(schema, payload.query, '', payload.params);
 
   if (resp.errors) {

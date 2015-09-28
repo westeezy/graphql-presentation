@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<form>
+  <div class="form-group">
+    <label for="mutate">Mutate</label>
+    <textarea class="form-control"
+              id="mutate-text"
+              name="mutate"
+              rows="10"
+              placeholder="Enter Mutation"></textarea>
+    <br />
+    <label for="params">Params</label>
+    <textarea class="form-control"
+              id="params-text"
+              name="params"
+              rows="5"
+              placeholder="Enter Params"></textarea>
+  </div>
+  <div class="pull-right">
+    <a class="btn btn-primary" href="/">Query View</a>
+    <button class="btn btn-danger"
+            id="mutate-btn"
+            type="submit">Mutate</button>
+  </div>
+</form>
+{% endblock %}

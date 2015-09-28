@@ -88,6 +88,12 @@ var schema = new GraphQLSchema({
           return 'world';
         }
       },
+      interests: {
+        type: new GraphQLList(GraphQLString),
+        resolve: function() {
+          return Interests.find();
+        }
+      },
       users: {
         type: GraphQLString,
         resolve: function() {

@@ -94,6 +94,18 @@ var schema = new GraphQLSchema({
           return Interests.find();
         }
       },
+      interest: {
+        type: interestType,
+        args: {
+          id: {
+            name: 'id',
+            type: new GraphQLNonNull(GraphQLString)
+          }
+        },
+        resolve: (root, {id}) => {
+          return Interests.findById(id);
+        }
+      },
       users: {
         type: GraphQLString,
         resolve: function() {

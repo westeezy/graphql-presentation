@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import server from './server';
 
 var User = mongoose.model('User');
+var Interests = mongoose.model('Interests');
 
 describe('graphql', function() {
   describe('query', function() {
@@ -46,6 +47,38 @@ describe('graphql', function() {
           user: {
             name: 'John Doe'
           }
+        }
+      });
+    });
+
+    it('should return the interests with name', function*() {
+      var interest = [new Interests({
+        name: 'Interest1'
+      })];
+
+      var findStub = this.sandbox.stub(Interests, 'find').returnsWithResolve(interest);
+
+      var resp = yield request(server.listen())
+        .get('/data')
+        .query({
+          query: `
+          {
+            interests {
+              name
+            }
+          }
+          `
+        })
+        .expect(200)
+        .end();
+
+      expect(findStub).calledWith();
+
+      expect(resp.body).to.be.eql({
+        data: {
+          interests: [{
+            name: 'Interest1'
+          }]
         }
       });
     });

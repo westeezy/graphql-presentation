@@ -3,7 +3,8 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
   GraphQLString,
-  GraphQLList
+  GraphQLList,
+  GraphQLInt
 } from 'graphql/type';
 
 import co from 'co';
@@ -96,8 +97,14 @@ var schema = new GraphQLSchema({
       },
       users: {
         type: new GraphQLList(userType),
-        resolve: function() {
-          return User.find();
+        args: {
+          limit: {
+            name: 'limit',
+            type: GraphQLInt
+          }
+        },
+        resolve: function(root, {limit}) {
+          return limit ? User.find().limit(limit) : User.find();
         }
       },
       user: {

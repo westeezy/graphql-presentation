@@ -1,0 +1,19 @@
+<h2>Heirarchical</h2>
+<span>The query is shaped like the data it returns. Composition encourage and supported.</span>
+<pre><code>
+{
+  user(id: 4802170) {
+    id
+    name
+    isViewerFriend
+    profilePicture(size: 50)  {
+      uri
+    }
+    friendConnection(first: 5) {
+      friends {
+        name
+      }
+    }
+  }
+}
+</code></pre>

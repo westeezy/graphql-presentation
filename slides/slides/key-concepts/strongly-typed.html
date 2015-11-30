@@ -1,0 +1,13 @@
+<h2>Strongly Typed</h2>
+<ul>
+  <li>Server can make guarantees about the data as well as analyze the queries syntax.</li>
+  <li>Each layer of a query corresponds to a type and each type defines it's fields</li>
+</ul>
+
+<pre><code>
+type Human : Character {
+  id: String
+  name: String
+  friends: [Character]
+}
+</code></pre>

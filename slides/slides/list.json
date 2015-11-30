@@ -7,6 +7,13 @@
       "what-is-graphql/how.html",
       "what-is-graphql/example.html"
     ],
-    "keyconcepts.html",
+    [
+      "key-concepts/keyconcepts.html",
+      "key-concepts/heirarchical.html",
+      "key-concepts/product-centric.html",
+      "key-concepts/strongly-typed.html",
+      "key-concepts/introspective.html",
+      "key-concepts/application-layer.html"
+    ],
     "anatomy.html"
 ]

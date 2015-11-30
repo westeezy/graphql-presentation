@@ -1,11 +1,13 @@
+'use strict';
+
 import request from 'superagent';
 import Debug from 'debug';
 
-var debug = new Debug('client:mutation');
-var userId = '559645cd1a38532d14349246';
-var deleteId = '559645cd1a38532d14349242';
-var names = ['Doe', 'Smith', 'Winston', 'Lee', 'Foo', 'Bar'];
-var name = names[Math.floor(Math.random() * names.length)];
+let debug = new Debug('client:mutation');
+let userId = '559645cd1a38532d14349246';
+let deleteId = '559645cd1a38532d14349242';
+let names = ['Doe', 'Smith', 'Winston', 'Lee', 'Foo', 'Bar'];
+let name = names[Math.floor(Math.random() * names.length)];
 
 request
   .post('http://localhost:3000/data')

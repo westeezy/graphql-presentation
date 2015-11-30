@@ -1,0 +1,10 @@
+<h2>Application Layer</h2>
+<span>It is a protocol not a method of storage</span>
+<pre><code>
+interests: {
+  type: new GraphQLList(interestType),
+  resolve: function() {
+    return db.interests.find();
+  }
+},
+</code></pre>

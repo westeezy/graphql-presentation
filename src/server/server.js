@@ -15,7 +15,7 @@ let render = views(__dirname + '/views', {
 
 let port = process.env.PORT || 3000;
 let routes = new Router();
-var app = koa();
+let app = koa();
 
 // support nested query tring params
 qs(app);
@@ -34,10 +34,10 @@ routes.get('/mutate', function* () {
 });
 
 routes.get('/data', function* () {
-  var query = this.query.query;
-  var params = this.query.params;
+  let query = this.query.query;
+  let params = this.query.params;
 
-  var resp = yield graphql(schema, query, '', params);
+  let resp = yield graphql(schema, query, '', params);
 
   if (resp.errors) {
     this.status = 400;
@@ -51,7 +51,7 @@ routes.get('/data', function* () {
 });
 
 routes.post('/data', function* () {
-  var payload = yield parseBody(this);
+  let payload = yield parseBody(this);
   if(typeof payload.params === 'string') {
     try {
       payload.params = JSON.parse(payload.params);
@@ -59,7 +59,7 @@ routes.post('/data', function* () {
       debug(e);
     }
   }
-  var resp = yield graphql(schema, payload.query, '', payload.params);
+  let resp = yield graphql(schema, payload.query, '', payload.params);
 
   if (resp.errors) {
     this.status = 400;

@@ -8,20 +8,20 @@ import request from 'co-supertest';
 import mongoose from 'mongoose';
 import server from './server';
 
-var User = mongoose.model('User');
-var Interests = mongoose.model('Interests');
+let User = mongoose.model('User');
+let Interests = mongoose.model('Interests');
 
 describe('graphql', function() {
   describe('query', function() {
     it('should return with user by id for shorthand query', function*() {
-      var user = new User({
+      let user = new User({
         name: 'John Doe'
       });
 
-      var findByIdStub = this.sandbox.stub(User, 'findById').returnsWithResolve(
+      let findByIdStub = this.sandbox.stub(User, 'findById').returnsWithResolve(
         user);
 
-      var resp = yield request(server.listen())
+        let resp = yield request(server.listen())
         .get('/data')
         .query({
           query: `
@@ -37,40 +37,39 @@ describe('graphql', function() {
         })
         .expect(200)
         .end();
+        expect(findByIdStub).to.calledWithMatch(user._id.toString(), {
+          name: true
+        });
 
-      expect(findByIdStub).to.calledWithMatch(user._id.toString(), {
-        name: 1
-      });
-
-      expect(resp.body).to.be.eql({
-        data: {
-          user: {
-            name: 'John Doe'
+        expect(resp.body).to.be.eql({
+          data: {
+            user: {
+              name: 'John Doe'
+            }
           }
-        }
-      });
+        });
     });
 
     it('should return the interests with name', function*() {
-      var interest = [new Interests({
+      let interest = [new Interests({
         name: 'Interest1'
       })];
 
-      var findStub = this.sandbox.stub(Interests, 'find').returnsWithResolve(interest);
+      let findStub = this.sandbox.stub(Interests, 'find').returnsWithResolve(interest);
 
-      var resp = yield request(server.listen())
-        .get('/data')
-        .query({
-          query: `
-          {
-            interests {
-              name
-            }
+      let resp = yield request(server.listen())
+      .get('/data')
+      .query({
+        query: `
+        {
+          interests {
+            name
           }
-          `
-        })
-        .expect(200)
-        .end();
+        }
+        `
+      })
+      .expect(200)
+      .end();
 
       expect(findStub).calledWith();
 
@@ -84,25 +83,25 @@ describe('graphql', function() {
     });
 
     it('should return with user by id with friends for query with params', function*() {
-      var friend1 = new User({
+      let friend1 = new User({
         name: 'Friend One'
       });
 
-      var friend2 = new User({
+      let friend2 = new User({
         name: 'Friend Two'
       });
 
-      var user = new User({
+      let user = new User({
         name: 'John Doe',
         friends: [friend1, friend2]
       });
 
-      var findStub = this.sandbox.stub(User, 'find').returnsWithResolve(
+      let findStub = this.sandbox.stub(User, 'find').returnsWithResolve(
         [friend1, friend2]);
 
-      this.sandbox.stub(User, 'findById').returnsWithResolve(user);
+        this.sandbox.stub(User, 'findById').returnsWithResolve(user);
 
-      var resp = yield request(server.listen())
+        let resp = yield request(server.listen())
         .get('/data')
         .query({
           query: `
@@ -122,76 +121,76 @@ describe('graphql', function() {
         .expect(200)
         .end();
 
-      expect(findStub).to.calledWithMatch({
-        _id: {
-          $in: [friend1._id.toString(), friend2._id.toString()]
-        }
-      }, {
-        name: 1
-      });
-
-      expect(resp.body).to.be.eql({
-        data: {
-          user: {
-            name: 'John Doe',
-            friends: [{
-              name: 'Friend One'
-            }, {
-              name: 'Friend Two'
-            }]
+        expect(findStub).to.calledWithMatch({
+          _id: {
+            $in: [ `{ friends: [],\n  interests: [],\n  _id: ${friend1._id.toString()},\n  name: \'Friend One\' }`,
+              `{ friends: [],\n  interests: [],\n  _id: ${friend2._id.toString()},\n  name: \'Friend Two\' }` ]
           }
-        }
-      });
+        }, {
+          name: true
+        });
+
+        expect(resp.body).to.be.eql({
+          data: {
+            user: {
+              name: 'John Doe',
+              friends: [{
+                name: 'Friend One'
+              }, {
+                name: 'Friend Two'
+              }]
+            }
+          }
+        });
     });
 
     it('should handle bad queries', function*() {
       yield request(server.listen())
-        .get('/data')
-        .query({
-          query: `
-          query {
-            user {
-              name
-            }
+      .get('/data')
+      .query({
+        query: `
+        query {
+          user {
+            name
           }
-          `
-        })
-        .expect(400)
-        .end();
+        }
+        `
+      })
+      .expect(400)
+      .end();
     });
   });
 
   describe('mutation', function() {
     it('should set user name', function*() {
-      var user = new User({
+      let user = new User({
         name: 'Smith Doe'
       });
 
-      var findAndUpdateStub = this.sandbox.stub(User, 'update',
-        function() {
-          user.name = 'John Smith';
-          return Promise.resolve(user);
-        });
+      let findAndUpdateStub = this.sandbox.stub(User, 'update', function() {
+        user.name = 'John Smith';
+        return Promise.resolve(user);
+      });
 
       this.sandbox.stub(User, 'findById').returnsWithResolve(user);
 
-      var resp = yield request(server.listen())
-        .post('/data')
-        .send({
-          query: `
-          mutation updateUser($userId: String! $name: String!) {
-            updateUser(id: $userId name: $name) {
-              name
-            }
+      let resp = yield request(server.listen())
+      .post('/data')
+      .send({
+        query: `
+        mutation updateUser($userId: String! $name: String!) {
+          updateUser(id: $userId name: $name) {
+            name
           }
-          `,
-          params: {
-            userId: user._id,
-            name: 'John Smith'
-          }
-        })
-        .expect(200)
-        .end();
+        }
+        `,
+        params: {
+          userId: user._id,
+          name: 'John Smith'
+        }
+      })
+      .expect(200)
+      .end();
 
       expect(findAndUpdateStub).to.calledWithMatch({
         _id: user._id.toString()

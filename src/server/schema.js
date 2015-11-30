@@ -4,28 +4,54 @@ import {
   GraphQLSchema,
   GraphQLString,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLBoolean
 } from 'graphql/type';
 
 import co from 'co';
 import User from './models/user';
 import Interests from './models/interests';
+import mongoose from 'mongoose';
 
 /**
  * generate projection object for mongoose
  * @param  {Object} fieldASTs
  * @return {Project}
  */
-function getProjection (fieldASTs) {
-  return fieldASTs.selectionSet.selections.reduce((projections, selection) => {
-    projections[selection.name.value] = 1;
+function getFieldList(context, asts = context.fieldASTs) {
+  //for recursion...Fragments doesn't have many sets...
+  if (!Array.isArray(asts)) asts = [asts];
 
-    return projections;
+  //get all selectionSets
+  let selections = asts.reduce((selections, source) => {
+    selections.push(...source.selectionSet.selections);
+    return selections;
+  }, []);
+
+  //return fields
+  return selections.reduce((list, ast) => {
+    switch (ast.kind) {
+      case 'Field' :
+        list[ast.name.value] = true;
+      return list;
+      case 'InlineFragment':
+        return {
+        ...list,
+        ...getFieldList(context, ast)
+      };
+      case 'FragmentSpread':
+        return {
+        ...list,
+        ...getFieldList(context, context.fragments[ast.name.value])
+      };
+      default:
+        throw new Error('Unsuported query selection');
+    }
   }, {});
 }
 
 
-var interestType = new GraphQLObjectType({
+let interestType = new GraphQLObjectType({
   name: 'Interest',
   description: 'An Interest',
   fields: () => ({
@@ -40,7 +66,7 @@ var interestType = new GraphQLObjectType({
   })
 });
 
-var userType = new GraphQLObjectType({
+let userType = new GraphQLObjectType({
   name: 'User',
   description: 'User creator',
   fields: () => ({
@@ -66,8 +92,8 @@ var userType = new GraphQLObjectType({
     friends: {
       type: new GraphQLList(userType),
       description: 'The friends of the user, or an empty list if they have none.',
-      resolve: (user, params, source, fieldASTs) => {
-        var projections = getProjection(fieldASTs);
+      resolve: (user, params, source) => {
+        let projections = getFieldList(source);
         return User.find({
           _id: {
             // to make it easily testable
@@ -79,7 +105,7 @@ var userType = new GraphQLObjectType({
   })
 });
 
-var schema = new GraphQLSchema({
+let schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
@@ -101,10 +127,25 @@ var schema = new GraphQLSchema({
           limit: {
             name: 'limit',
             type: GraphQLInt
+          },
+          hasFriends: {
+            name: 'hasFriends',
+            type: GraphQLBoolean
+          },
+          interestedIn: {
+            name: 'interestedIn',
+            type: GraphQLString
           }
         },
-        resolve: function(root, {limit}) {
-          return limit ? User.find().limit(limit) : User.find();
+        resolve: function(root, {limit, hasFriends, interestedIn}) {
+          let query = {};
+          if(hasFriends) {
+            query.friends = { $exists: true, $not: { $size: 0} };
+          }
+          if(interestedIn) {
+            query.interests = {$in: [mongoose.Types.ObjectId(interestedIn)]};
+          }
+          return limit ? User.find(query).limit(limit) : User.find(query);
         }
       },
       user: {
@@ -115,8 +156,8 @@ var schema = new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, {id}, source, fieldASTs) => {
-          var projections = getProjection(fieldASTs);
+        resolve: (root, {id}, source) => {
+          let projections = getFieldList(source);
           return User.findById(id, projections);
         }
       }
@@ -136,7 +177,7 @@ var schema = new GraphQLSchema({
           }
         },
         resolve: (obj, {name}) => co(function *() {
-          var user = new User();
+          let user = new User();
           user.name = name;
 
 
@@ -167,8 +208,8 @@ var schema = new GraphQLSchema({
             type: GraphQLString
           }
         },
-        resolve: (obj, {id, name}, source, fieldASTs) => co(function *() {
-          var projections = getProjection(fieldASTs);
+        resolve: (obj, {id, name}, source) => co(function *() {
+          let projections = getFieldList(source);
 
           yield User.update({
             _id: id
@@ -185,7 +226,4 @@ var schema = new GraphQLSchema({
   })
 });
 
-/* eslint-disable */
-export var getProjection;
 export default schema;
-/* eslint-enable */

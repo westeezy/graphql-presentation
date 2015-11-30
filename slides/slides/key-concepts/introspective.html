@@ -1,0 +1,15 @@
+<h2>Introspective</h2>
+<span>Can query for it's types and fields</span>
+<pre><code>
+{
+  __type(name: "User") {
+    name
+    fields {
+      name
+      type {
+        name
+      }
+    }
+  }
+}
+</code></pre>

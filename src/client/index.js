@@ -1,6 +1,8 @@
+'use strict';
+
 require('babel/register');
 
-var debug = require('debug');
+let debug = require('debug');
 debug.enable('client*');
 
 require('./query');
